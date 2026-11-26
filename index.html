@@ -403,7 +403,7 @@
    Funciona igual servida por Apps Script (google.script.run)
    o como página estática en GitHub Pages (fetch a la API).
    ============================================================ */
-const APP_VERSION = '2.2.1';
+const APP_VERSION = '2.3.0';
 const EXEC_URL = 'https://script.google.com/macros/s/AKfycbxYRU7y1AxDqaEtZnqftuI1UK1YpJxCYb1A1tAMP6ylO7aOQmtWmYjQQ7tdoiA9X5z1/exec';
 const API_URL = window.QLT_API_URL || EXEC_URL;
 const IS_GAS = !!(window.google && google.script && google.script.run);
@@ -1268,6 +1268,24 @@ function resultadoProvisional(j, filas) {
   });
   return { picks, plenoHome: ph, plenoAway: pa, extra };
 }
+function aportables(j, filas) {
+  const picks = {}; let ph = null, pa = null, n = 0;
+  (filas || []).forEach(f => {
+    if (!f.encontrado || f.estado !== 'post' || /AET|PEN|EXTRA|SHOOT/i.test(f.detalle)) return;
+    if (f.num === '15') { if (!j.resultado.plenoHome && !j.resultado.plenoAway) { ph = f.ph; pa = f.pa; n++; } return; }
+    if (!j.resultado.picks[f.num]) { picks[f.num] = f.signo; n++; }
+  });
+  return { picks, ph, pa, n };
+}
+const servidorAporta = () => !!(S.data && S.data.meta && cmpVer(S.data.meta.serverVersion || '0', '2.2.0') >= 0);
+function guardarAportados(btn) {
+  const j = J(S.jview), L = j && LIVE[j.id]; if (!L || !L.filas) return;
+  const a = aportables(j, L.filas); if (!a.n) return;
+  const r = busy(btn, 'Guardando…');
+  api('resultadosEspn', { jornadaId: j.id, picks: a.picks, plenoHome: a.ph, plenoAway: a.pa }, { timeout: 45000 }).then(res => {
+    toast(res.nuevos ? `Guardado${res.nuevos === 1 ? '' : 's'} ${res.nuevos} resultado${res.nuevos === 1 ? '' : 's'}. Ya lo ve toda la peña.` : 'Ya estaban guardados.', 'success');
+  }, err => { toast('No se ha guardado: ' + err.message, 'error'); r(); });
+}
 const horaLocal = iso => { try { return new Date(iso).toLocaleString('es-ES', { weekday: 'short', hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } };
 function liveCardHTML(j) {
   const L = LIVE[j.id];
@@ -1286,6 +1304,9 @@ function liveCardHTML(j) {
       <span class="lt"><span class="ltt">${esc(shortTeam(f.home))} – ${esc(shortTeam(f.away))}</span><small>${esc(estado)}</small></span>
       <span class="ls">${marcador}</span><span class="lsig">${oficial ? `<b title="Guardado por el admin">${esc(oficial)}</b>` : (signo ? `<i title="Provisional">${esc(signo)}</i>` : '')}</span></div>`;
   }).join('') + `</div>`;
+  const ap = aportables(j, L.filas);
+  if (ap.n && servidorAporta()) h += `<div class="btn-row"><button class="btn small" data-act="liveSave">💾 Guardar ${ap.n} terminado${ap.n === 1 ? '' : 's'} para todos</button></div>
+    <p class="hint" style="margin:6px 0 0">Solo se guardan los partidos ya acabados que aún no tienen resultado; lo que ya está guardado no se toca.</p>`;
   if (prov.extra > 0 && canSeePena(j) && j.entries.length) {
     const total = j.matches.length;
     const filas = j.entries.map(e => { let a = 0, d = 0; for (let i = 1; i <= total; i++) { const r = prov.picks[i]; if (!r) continue; d++; if (e.picks && e.picks[i] === r) a++; } return { name: e.name, a, d }; }).sort((x, y) => y.a - x.a);
@@ -1765,6 +1786,7 @@ const ACTIONS = {
   saveRes: el => { guardarResultados(el); },
   espnRes: () => { espnTraerAdmin(false); },
   liveRefresh: () => { const j = J(S.jview); if (j) loadLive(j, true); },
+  liveSave: el => guardarAportados(el),
   combPick: el => { const st = S.admin.comb; const m = el.dataset.m, v = el.dataset.v; const arr = st.marcados[m] = st.marcados[m] || []; const i = arr.indexOf(v); if (i === -1) arr.push(v); else arr.splice(i, 1); arr.sort((a, b) => SIGNOS.indexOf(a) - SIGNOS.indexOf(b)); combChanged(); },
   combPleno: el => { const st = S.admin.comb; const k = el.dataset.side === 'h' ? 'ph' : 'pa'; st[k] = el.dataset.v; combChanged(); },
   combA8: el => { const st = S.admin.comb; const n = Number(el.dataset.m); const i = st.a8.indexOf(n); if (i === -1) st.a8.push(n); else st.a8.splice(i, 1); st.a8.sort((a, b) => a - b); combChanged(); },
