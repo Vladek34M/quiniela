@@ -403,7 +403,7 @@
    Funciona igual servida por Apps Script (google.script.run)
    o como página estática en GitHub Pages (fetch a la API).
    ============================================================ */
-const APP_VERSION = '2.4.0';
+const APP_VERSION = '2.4.1';
 const EXEC_URL = 'https://script.google.com/macros/s/AKfycbxYRU7y1AxDqaEtZnqftuI1UK1YpJxCYb1A1tAMP6ylO7aOQmtWmYjQQ7tdoiA9X5z1/exec';
 const API_URL = window.QLT_API_URL || EXEC_URL;
 const IS_GAS = !!(window.google && google.script && google.script.run);
@@ -1259,15 +1259,6 @@ function loadLive(j, forzar) {
     .then(() => { L.cargando = false; updateLiveCard(j); const jj = J(j.id); if (jj) autoGuardar(jj); });
 }
 function updateLiveCard(j) { const el = $('#liveCard'); if (el && S.tab === 'jornada' && S.jview === j.id) el.innerHTML = liveCardHTML(j); }
-function resultadoProvisional(j, filas) {
-  const picks = Object.assign({}, j.resultado.picks); let ph = j.resultado.plenoHome, pa = j.resultado.plenoAway, extra = 0;
-  filas.forEach(f => {
-    if (!f.encontrado || f.estado === 'pre') return;
-    if (f.num === '15') { if (!(ph && pa)) { ph = f.ph; pa = f.pa; } return; }
-    if (!picks[f.num]) { picks[f.num] = f.signo; extra++; }
-  });
-  return { picks, plenoHome: ph, plenoAway: pa, extra };
-}
 const conProrroga = f => /AET|PEN|EXTRA|SHOOT/i.test(f.detalle || '');
 function aportables(j, filas) {   // terminados en ESPN (sin prórroga) y aún sin resultado guardado
   const picks = {}; let ph = null, pa = null, n = 0;
@@ -1296,7 +1287,6 @@ function liveCardHTML(j) {
   let h = `<div class="card-head"><h2>En directo</h2><span class="mono muted" style="font-size:12px">ESPN${L && L.at ? ' · ' + esc(relTime(L.at)) : ''} <button class="linkbtn" data-act="liveRefresh" aria-label="Actualizar marcadores">↻</button></span></div>`;
   if (!L || (L.cargando && !L.filas)) return h + `<p class="hint">Buscando marcadores…</p><div class="sk"></div><div class="sk s"></div>`;
   if (!L.filas) return h + `<p class="hint">No se han podido cargar los marcadores (${esc(L.error || '')}). Toca ↻ para reintentar.</p>`;
-  const prov = resultadoProvisional(j, L.filas);
   h += `<p class="hint">En verde, los partidos terminados; con borde, los que se están jugando (provisional).</p><div class="live-list">` + L.filas.map(f => {
     const oficial = f.num === '15' ? (j.resultado.plenoHome && j.resultado.plenoAway ? j.resultado.plenoHome + '-' + j.resultado.plenoAway : '') : (j.resultado.picks[f.num] || '');
     let marcador = '<span class="muted">·</span>', estado = 'no está en ESPN', signo = '';
@@ -1311,16 +1301,6 @@ function liveCardHTML(j) {
       <span class="ls">${marcador}</span><span class="lsig">${chip}</span></div>`;
   }).join('') + `</div>`;
   if (L.errorGuardar) h += `<p class="hint" style="margin:8px 0 0">No se han podido guardar los terminados (${esc(L.errorGuardar)}); se reintentará solo.</p>`;
-  if (prov.extra > 0 && canSeePena(j) && j.entries.length) {
-    const total = j.matches.length;
-    const filas = j.entries.map(e => { let a = 0, d = 0; for (let i = 1; i <= total; i++) { const r = prov.picks[i]; if (!r) continue; d++; if (e.picks && e.picks[i] === r) a++; } return { name: e.name, a, d }; }).sort((x, y) => y.a - x.a);
-    let boleto = '';
-    if (j.combiInfo.tieneCombinacion) {
-      let a = 0, d = 0; for (let i = 1; i <= total; i++) { const r = prov.picks[i]; if (!r) continue; d++; if ((j.combinacion.marcados[i] || []).includes(r)) a++; }
-      boleto = `<p class="mono" style="font-size:13px;margin:4px 0 8px">Boleto real: <b>${a}/${d}</b></p>`;
-    }
-    h += `<h3>Si acabara ahora</h3>${boleto}<table class="tbl"><tbody>${filas.map((r, i) => `<tr class="${r.name === S.me ? 'me' : ''}"><td style="width:28px"><span class="pos">${i + 1}</span></td><td>${i === 0 || r.a === filas[0].a ? '🥇 ' : ''}${esc(r.name)}</td><td class="num"><b>${r.a}</b>/${r.d}</td></tr>`).join('')}</tbody></table>`;
-  }
   return h;
 }
 function boletoRealHTML(j) {
