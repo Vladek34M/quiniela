@@ -403,7 +403,7 @@
    Funciona igual servida por Apps Script (google.script.run)
    o como página estática en GitHub Pages (fetch a la API).
    ============================================================ */
-const APP_VERSION = '2.4.1';
+const APP_VERSION = '2.4.2';
 const EXEC_URL = 'https://script.google.com/macros/s/AKfycbxYRU7y1AxDqaEtZnqftuI1UK1YpJxCYb1A1tAMP6ylO7aOQmtWmYjQQ7tdoiA9X5z1/exec';
 const API_URL = window.QLT_API_URL || EXEC_URL;
 const IS_GAS = !!(window.google && google.script && google.script.run);
@@ -1269,7 +1269,10 @@ function aportables(j, filas) {   // terminados en ESPN (sin prórroga) y aún s
   });
   return { picks, ph, pa, n };
 }
-const servidorAporta = () => !!(S.data && S.data.meta && cmpVer(S.data.meta.serverVersion || '0', '2.2.0') >= 0);
+// Se intenta siempre; solo si el servidor no conoce la función (versión antigua) se deja de intentar.
+// (No se mira la versión que traen los datos: puede venir de una copia en caché de antes de actualizar.)
+let sinAportar = false;
+const servidorAporta = () => !sinAportar;
 // Los partidos ya terminados se guardan solos para todos en cuanto alguien mira la jornada
 // (el servidor solo rellena huecos: nunca cambia un resultado ya guardado).
 function autoGuardar(j) {
@@ -1279,7 +1282,10 @@ function autoGuardar(j) {
   api('resultadosEspn', { jornadaId: j.id, picks: a.picks, plenoHome: a.ph, plenoAway: a.pa }, { timeout: 45000 }).then(res => {
     L.errorGuardar = null;
     if (res.nuevos) toast(`Actualizado${res.nuevos === 1 ? '' : 's'} ${res.nuevos} resultado${res.nuevos === 1 ? '' : 's'} de partidos ya terminados.`, 'success');
-  }, err => { L.errorGuardar = err.message; updateLiveCard(j); }).then(() => { L.guardando = false; });
+  }, err => {
+    if (/Acción desconocida/i.test(err.message)) { sinAportar = true; return; }   // servidor antiguo: sin aviso, no se reintenta
+    L.errorGuardar = err.message; updateLiveCard(j);
+  }).then(() => { L.guardando = false; });
 }
 const horaLocal = iso => { try { return new Date(iso).toLocaleString('es-ES', { weekday: 'short', hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } };
 function liveCardHTML(j) {
