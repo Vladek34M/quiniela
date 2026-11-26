@@ -403,7 +403,7 @@
    Funciona igual servida por Apps Script (google.script.run)
    o como página estática en GitHub Pages (fetch a la API).
    ============================================================ */
-const APP_VERSION = '2.3.0';
+const APP_VERSION = '2.4.0';
 const EXEC_URL = 'https://script.google.com/macros/s/AKfycbxYRU7y1AxDqaEtZnqftuI1UK1YpJxCYb1A1tAMP6ylO7aOQmtWmYjQQ7tdoiA9X5z1/exec';
 const API_URL = window.QLT_API_URL || EXEC_URL;
 const IS_GAS = !!(window.google && google.script && google.script.run);
@@ -1236,11 +1236,10 @@ function renderJornada() {
     </div></div>
     ${liveAplica(j) ? `<div class="card" id="liveCard">${liveCardHTML(j)}</div>` : ''}
     <div class="card">${boletoRealHTML(j)}</div>
-    <div class="card">${aciertosHTML(j)}</div>
-    <div class="card"><h2>Boletos de la peña</h2>${canSeePena(j)
+    <div class="card">${aciertosHTML(j)}
+      <h3>Boletos de la peña</h3>${canSeePena(j)
       ? `<p class="hint">Verde = acertado, rojo = fallado. 🥇 = quien más lleva.</p>${penaGrid(j, true)}`
-      : `<p class="hint" style="margin:0">🔒 La votación de esta jornada sigue abierta. Sella tu quiniela (pestaña Jugar) para ver los boletos de los demás.</p>`}</div>
-    ${j.opiniones.length && canSeePena(j) ? `<div class="card"><h2>Dobles y triple propuestos</h2>${opinionSummary(j)}</div>` : ''}`;
+      : `<p class="hint" style="margin:0">🔒 La votación de esta jornada sigue abierta. Sella tu quiniela (pestaña Jugar) para ver los boletos de los demás.</p>`}</div>`;
   if (liveAplica(j)) loadLive(j);
 }
 /* ----- En directo: marcadores de ESPN (provisionales, no se guardan) ----- */
@@ -1253,10 +1252,11 @@ function liveAplica(j) {
 }
 function loadLive(j, forzar) {
   const L = LIVE[j.id] = LIVE[j.id] || {};
+  if (L.errorGuardar && !L.guardando && L.filas && !L.cargando) { autoGuardar(j); }
   if (L.cargando || (!forzar && L.at && Date.now() - L.at < 80000)) return;
   L.cargando = true; updateLiveCard(j);
   espnParaJornada(j, { recientes: true, fresco: !!forzar }).then(r => { L.filas = r.filas; L.at = Date.now(); L.error = null; }, e => { L.error = e.message || 'error'; })
-    .then(() => { L.cargando = false; updateLiveCard(j); });
+    .then(() => { L.cargando = false; updateLiveCard(j); const jj = J(j.id); if (jj) autoGuardar(jj); });
 }
 function updateLiveCard(j) { const el = $('#liveCard'); if (el && S.tab === 'jornada' && S.jview === j.id) el.innerHTML = liveCardHTML(j); }
 function resultadoProvisional(j, filas) {
@@ -1268,23 +1268,27 @@ function resultadoProvisional(j, filas) {
   });
   return { picks, plenoHome: ph, plenoAway: pa, extra };
 }
-function aportables(j, filas) {
+const conProrroga = f => /AET|PEN|EXTRA|SHOOT/i.test(f.detalle || '');
+function aportables(j, filas) {   // terminados en ESPN (sin prórroga) y aún sin resultado guardado
   const picks = {}; let ph = null, pa = null, n = 0;
   (filas || []).forEach(f => {
-    if (!f.encontrado || f.estado !== 'post' || /AET|PEN|EXTRA|SHOOT/i.test(f.detalle)) return;
+    if (!f.encontrado || f.estado !== 'post' || conProrroga(f)) return;
     if (f.num === '15') { if (!j.resultado.plenoHome && !j.resultado.plenoAway) { ph = f.ph; pa = f.pa; n++; } return; }
     if (!j.resultado.picks[f.num]) { picks[f.num] = f.signo; n++; }
   });
   return { picks, ph, pa, n };
 }
 const servidorAporta = () => !!(S.data && S.data.meta && cmpVer(S.data.meta.serverVersion || '0', '2.2.0') >= 0);
-function guardarAportados(btn) {
-  const j = J(S.jview), L = j && LIVE[j.id]; if (!L || !L.filas) return;
+// Los partidos ya terminados se guardan solos para todos en cuanto alguien mira la jornada
+// (el servidor solo rellena huecos: nunca cambia un resultado ya guardado).
+function autoGuardar(j) {
+  const L = LIVE[j.id]; if (!L || !L.filas || L.guardando || !servidorAporta()) return;
   const a = aportables(j, L.filas); if (!a.n) return;
-  const r = busy(btn, 'Guardando…');
+  L.guardando = true;
   api('resultadosEspn', { jornadaId: j.id, picks: a.picks, plenoHome: a.ph, plenoAway: a.pa }, { timeout: 45000 }).then(res => {
-    toast(res.nuevos ? `Guardado${res.nuevos === 1 ? '' : 's'} ${res.nuevos} resultado${res.nuevos === 1 ? '' : 's'}. Ya lo ve toda la peña.` : 'Ya estaban guardados.', 'success');
-  }, err => { toast('No se ha guardado: ' + err.message, 'error'); r(); });
+    L.errorGuardar = null;
+    if (res.nuevos) toast(`Actualizado${res.nuevos === 1 ? '' : 's'} ${res.nuevos} resultado${res.nuevos === 1 ? '' : 's'} de partidos ya terminados.`, 'success');
+  }, err => { L.errorGuardar = err.message; updateLiveCard(j); }).then(() => { L.guardando = false; });
 }
 const horaLocal = iso => { try { return new Date(iso).toLocaleString('es-ES', { weekday: 'short', hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } };
 function liveCardHTML(j) {
@@ -1293,20 +1297,20 @@ function liveCardHTML(j) {
   if (!L || (L.cargando && !L.filas)) return h + `<p class="hint">Buscando marcadores…</p><div class="sk"></div><div class="sk s"></div>`;
   if (!L.filas) return h + `<p class="hint">No se han podido cargar los marcadores (${esc(L.error || '')}). Toca ↻ para reintentar.</p>`;
   const prov = resultadoProvisional(j, L.filas);
-  h += `<p class="hint">Marcadores de ESPN. En verde, lo que ya ha guardado el admin; con borde, lo provisional.</p><div class="live-list">` + L.filas.map(f => {
+  h += `<p class="hint">En verde, los partidos terminados; con borde, los que se están jugando (provisional).</p><div class="live-list">` + L.filas.map(f => {
     const oficial = f.num === '15' ? (j.resultado.plenoHome && j.resultado.plenoAway ? j.resultado.plenoHome + '-' + j.resultado.plenoAway : '') : (j.resultado.picks[f.num] || '');
     let marcador = '<span class="muted">·</span>', estado = 'no está en ESPN', signo = '';
     if (f.encontrado) {
       if (f.estado === 'pre') estado = horaLocal(f.fecha);
-      else { marcador = `${f.gl}-${f.gv}`; estado = f.estado === 'in' ? (f.corto || 'En juego') : 'Final'; signo = f.num === '15' ? `${f.ph}-${f.pa}` : f.signo; }
-    }
+      else { marcador = `${f.gl}-${f.gv}`; estado = f.estado === 'in' ? (f.corto || 'En juego') : (conProrroga(f) ? 'Final con prórroga: lo marca el admin' : 'Final'); signo = f.num === '15' ? `${f.ph}-${f.pa}` : f.signo; }
+    } else if (oficial) estado = 'Final';
+    const terminado = oficial || (f.encontrado && f.estado === 'post' && !conProrroga(f));
+    const chip = oficial ? `<b title="Terminado">${esc(oficial)}</b>` : (terminado ? `<b title="Terminado">${esc(signo)}</b>` : (signo ? `<i title="Provisional: se está jugando">${esc(signo)}</i>` : ''));
     return `<div class="live-row ${f.encontrado ? f.estado : ''}"><span class="mnum ${f.num === '15' ? 'gold' : ''}">${f.num}</span>
       <span class="lt"><span class="ltt">${esc(shortTeam(f.home))} – ${esc(shortTeam(f.away))}</span><small>${esc(estado)}</small></span>
-      <span class="ls">${marcador}</span><span class="lsig">${oficial ? `<b title="Guardado por el admin">${esc(oficial)}</b>` : (signo ? `<i title="Provisional">${esc(signo)}</i>` : '')}</span></div>`;
+      <span class="ls">${marcador}</span><span class="lsig">${chip}</span></div>`;
   }).join('') + `</div>`;
-  const ap = aportables(j, L.filas);
-  if (ap.n && servidorAporta()) h += `<div class="btn-row"><button class="btn small" data-act="liveSave">💾 Guardar ${ap.n} terminado${ap.n === 1 ? '' : 's'} para todos</button></div>
-    <p class="hint" style="margin:6px 0 0">Solo se guardan los partidos ya acabados que aún no tienen resultado; lo que ya está guardado no se toca.</p>`;
+  if (L.errorGuardar) h += `<p class="hint" style="margin:8px 0 0">No se han podido guardar los terminados (${esc(L.errorGuardar)}); se reintentará solo.</p>`;
   if (prov.extra > 0 && canSeePena(j) && j.entries.length) {
     const total = j.matches.length;
     const filas = j.entries.map(e => { let a = 0, d = 0; for (let i = 1; i <= total; i++) { const r = prov.picks[i]; if (!r) continue; d++; if (e.picks && e.picks[i] === r) a++; } return { name: e.name, a, d }; }).sort((x, y) => y.a - x.a);
@@ -1362,10 +1366,20 @@ function aciertosHTML(j) {
 /* ============================================================
    PESTAÑA CLASIFICACIÓN
    ============================================================ */
+// Peor jornada de cada uno contando solo jornadas terminadas (14/14): una recién empezada
+// no puede ser "la peor" de todos. (La mejor no cambia: los aciertos de una jornada solo pueden subir.)
+function peoresTerminadas(d) {
+  const peor = {};
+  d.jornadas.forEach(j => {
+    if (!j.matches.length || j.estado.decididos < j.matches.length) return;
+    (j.porParticipante || []).forEach(p => { if (!peor[p.name] || p.aciertos < peor[p.name].aciertos) peor[p.name] = { label: j.label, aciertos: p.aciertos }; });
+  });
+  return peor;
+}
 function renderClasif() {
   const root = $('#tab-clasificacion');
   if (!S.data) { root.innerHTML = S.lastError ? loadError() : skeleton(3); return; }
-  const d = S.data, c = d.clasif;
+  const d = S.data, c = d.clasif, peores = peoresTerminadas(d);
   const conCombi = d.jornadas.filter(j => j.combiInfo.tieneCombinacion);
   const combiRows = conCombi.map(j => {
     const ci = j.combiInfo; let a8 = '—';
@@ -1375,13 +1389,13 @@ function renderClasif() {
   }).join('');
   const clasRows = c.clasificacion.map((r, i) => `
     <tr class="${r.name === S.me ? 'me' : ''}"><td style="width:28px"><span class="pos">${i + 1}</span></td>
-      <td>${esc(r.name)}<div class="sub">${r.jornadas} jorn. · mejor ${r.mejor ? `${r.mejor.aciertos} (${esc(shortLabel(r.mejor.label))})` : '-'} · peor ${r.peor ? `${r.peor.aciertos} (${esc(shortLabel(r.peor.label))})` : '-'}</div></td>
+      <td>${esc(r.name)}<div class="sub">${r.jornadas} jorn. · mejor ${r.mejor ? `${r.mejor.aciertos} (${esc(shortLabel(r.mejor.label))})` : '-'} · peor ${peores[r.name] ? `${peores[r.name].aciertos} (${esc(shortLabel(peores[r.name].label))})` : '-'}</div></td>
       <td class="num xl">${r.jornadas}</td>
       <td class="num"><b>${r.aciertos}</b>/${r.decididos}</td>
       <td class="num">${r.decididos ? Math.round(r.aciertos / r.decididos * 100) : 0}%</td>
       <td class="num">${r.plenos}</td>
       <td class="xl">${r.mejor ? `${r.mejor.aciertos} (${esc(r.mejor.label)})` : '-'}</td>
-      <td class="xl">${r.peor ? `${r.peor.aciertos} (${esc(r.peor.label)})` : '-'}</td></tr>`).join('');
+      <td class="xl">${peores[r.name] ? `${peores[r.name].aciertos} (${esc(peores[r.name].label)})` : '-'}</td></tr>`).join('');
   const euros = arr => arr.reduce((s, p) => s + (Number(p.importe) || 0), 0);
   const pT = d.premios.filter(p => p.jornadaId), pH = d.premios.filter(p => !p.jornadaId);
   const resumenPremios = !d.premios.length ? 'Todavía no se ha registrado ningún premio.'
@@ -1395,7 +1409,7 @@ function renderClasif() {
       ${conCombi.length ? `<table class="tbl"><thead><tr><th>Jornada</th><th class="num">Aciertos</th><th class="num">Acierta8</th><th class="num">Pleno</th></tr></thead><tbody>${combiRows}</tbody></table>` : '<p class="empty">Aún no hay ningún boleto real registrado.</p>'}
     </div>
     <div class="card"><h2>Clasificación general</h2>
-      <p class="hint">Voto individual, solo partidos ya decididos. El pleno va aparte.</p>
+      <p class="hint">Voto individual, solo partidos ya decididos. El pleno va aparte. La peor jornada solo cuenta jornadas terminadas.</p>
       ${c.clasificacion.length ? `<table class="tbl"><thead><tr><th>#</th><th>Jugador</th><th class="num xl">Jorn.</th><th class="num">Aciertos</th><th class="num">%</th><th class="num">Plenos</th><th class="xl">Mejor</th><th class="xl">Peor</th></tr></thead><tbody>${clasRows}</tbody></table>` : '<p class="empty">Todavía no hay resultados.</p>'}
     </div>
     <div class="card"><h2>Medallero</h2>
@@ -1786,7 +1800,6 @@ const ACTIONS = {
   saveRes: el => { guardarResultados(el); },
   espnRes: () => { espnTraerAdmin(false); },
   liveRefresh: () => { const j = J(S.jview); if (j) loadLive(j, true); },
-  liveSave: el => guardarAportados(el),
   combPick: el => { const st = S.admin.comb; const m = el.dataset.m, v = el.dataset.v; const arr = st.marcados[m] = st.marcados[m] || []; const i = arr.indexOf(v); if (i === -1) arr.push(v); else arr.splice(i, 1); arr.sort((a, b) => SIGNOS.indexOf(a) - SIGNOS.indexOf(b)); combChanged(); },
   combPleno: el => { const st = S.admin.comb; const k = el.dataset.side === 'h' ? 'ph' : 'pa'; st[k] = el.dataset.v; combChanged(); },
   combA8: el => { const st = S.admin.comb; const n = Number(el.dataset.m); const i = st.a8.indexOf(n); if (i === -1) st.a8.push(n); else st.a8.splice(i, 1); st.a8.sort((a, b) => a - b); combChanged(); },
