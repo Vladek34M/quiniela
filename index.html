@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#D9A5A0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Quiniela">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="description" content="La quiniela de la peña: vota, sigue la jornada y mira la clasificación.">
 <meta property="og:title" content="Quiniela_LT · la quiniela de la peña">
 <meta property="og:description" content="Vota tu quiniela, sigue la jornada en directo y mira la clasificación.">
@@ -202,6 +206,47 @@
   .tag{display:inline-block;font-size:11px;padding:1px 7px;border-radius:10px;margin:2px 4px 2px 0;background:rgba(43,38,32,.08);border:1px solid rgba(43,38,32,.2);}
   .tag.t3{background:rgba(168,130,60,.18);border-color:var(--brass-deep);color:var(--brass-deep);}
 
+  /* ---------- Propuestas: lo más propuesto y por persona ---------- */
+  .cons{display:flex;flex-direction:column;gap:6px;margin-top:4px;}
+  .cons-row{display:grid;grid-template-columns:50px 24px minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px 10px;background:rgba(255,255,255,.45);border:1px solid var(--line);border-radius:2px;font-family:var(--font-mono);font-size:13px;}
+  .cons-row.t3{border-color:var(--brass-deep);background:rgba(168,130,60,.13);}
+  .cons-row .kind{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);}
+  .cons-row .ct{display:flex;flex-direction:column;min-width:0;}
+  .cons-row .tm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .cons-row .sig{display:block;font-size:13px;letter-spacing:0;color:var(--ink);text-transform:none;margin-top:1px;}
+  .cons-row .who{font-size:11px;color:var(--ink-soft);line-height:1.35;}
+  .votes{white-space:nowrap;font-weight:700;font-size:14px;}
+  .dots{color:var(--maroon);margin-right:5px;font-size:10px;letter-spacing:1px;}
+  .sug{margin:10px 0 0;padding:10px 12px;border:1.5px dashed var(--ink);border-radius:2px;font-family:var(--font-mono);font-size:13px;line-height:1.55;background:rgba(255,255,255,.3);}
+  .per-list{display:flex;flex-direction:column;margin-top:2px;}
+  .per{display:grid;grid-template-columns:66px minmax(0,1fr);gap:8px;align-items:center;padding:7px 0;border-bottom:1px dashed var(--line);font-family:var(--font-mono);font-size:13px;}
+  .per:last-child{border-bottom:none;}
+  .per.me .pname{text-decoration:underline;text-underline-offset:3px;}
+  .chip{display:inline-block;font-family:var(--font-mono);font-size:12px;padding:2px 8px;border-radius:10px;margin:2px 4px 2px 0;border:1px solid rgba(43,38,32,.3);background:rgba(43,38,32,.05);white-space:nowrap;}
+  .chip.t{border-color:var(--brass-deep);color:var(--brass-deep);background:rgba(168,130,60,.12);}
+  .chip.hot{background:var(--ink);color:var(--cream);border-color:var(--ink);}
+  .chip.t.hot{background:var(--brass-deep);color:var(--cream);border-color:var(--brass-deep);}
+  .mv-text{white-space:pre-wrap;word-break:break-word;font-family:var(--font-mono);font-size:12.5px;line-height:1.55;background:rgba(255,255,255,.6);border:1px solid var(--line);padding:10px 12px;border-radius:2px;margin:12px 0 0;-webkit-user-select:text;user-select:text;}
+  a.btn{text-decoration:none;display:inline-flex;align-items:center;justify-content:center;}
+  .install{border-style:dashed;}
+
+  /* ---------- En directo (ESPN) ---------- */
+  .live-list{display:flex;flex-direction:column;}
+  .live-row{display:grid;grid-template-columns:24px minmax(0,1fr) auto 42px;gap:8px;align-items:center;padding:7px 2px;border-bottom:1px dashed var(--line);font-family:var(--font-mono);font-size:13px;}
+  .live-row:last-child{border-bottom:none;}
+  .live-row .lt{min-width:0;display:flex;flex-direction:column;}
+  .live-row .ltt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .live-row .lt small{color:var(--ink-soft);font-size:11px;}
+  .live-row .ls{font-weight:700;font-size:15px;white-space:nowrap;}
+  .live-row.in .ls, .live-row.in .lt small{color:var(--maroon);font-weight:700;}
+  .live-row .lsig{text-align:center;}
+  .live-row .lsig i{font-style:normal;border:1.5px dashed var(--ink);padding:1px 6px;border-radius:3px;}
+  .live-row .lsig b{background:var(--green-ok);color:var(--cream);padding:2px 6px;border-radius:3px;}
+  .espn-box{border:1.5px dashed var(--ink);padding:10px 12px;border-radius:2px;margin:10px 0;background:rgba(255,255,255,.35);}
+  .espn-ul{margin:2px 0 6px;padding-left:18px;font-family:var(--font-mono);font-size:12px;line-height:1.55;}
+  .check{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:12.5px;cursor:pointer;}
+  .check input{width:18px;height:18px;accent-color:var(--ink);}
+
   /* ---------- Admin ---------- */
   .chip-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
   .chip-row .btn.ghost{min-width:42px;padding:8px 0;}
@@ -283,6 +328,9 @@
     .row2{flex-direction:column;gap:0;}
     .op-row{grid-template-columns:54px minmax(0,1fr);}
     .op-row .seg{grid-column:2;}
+    .cons-row{grid-template-columns:44px 24px minmax(0,1fr) auto;gap:7px;padding:8px;}
+    .per{grid-template-columns:58px minmax(0,1fr);}
+    .live-row{grid-template-columns:22px minmax(0,1fr) auto 38px;gap:6px;}
     .btn{font-size:18px;padding:14px 18px;}
     .btn.ghost{font-size:13px;padding:11px 14px;}
     .btn.small{font-size:12px;padding:7px 10px;}
@@ -355,7 +403,7 @@
    Funciona igual servida por Apps Script (google.script.run)
    o como página estática en GitHub Pages (fetch a la API).
    ============================================================ */
-const APP_VERSION = '2.0.0';
+const APP_VERSION = '2.2.0';
 const EXEC_URL = 'https://script.google.com/macros/s/AKfycbxYRU7y1AxDqaEtZnqftuI1UK1YpJxCYb1A1tAMP6ylO7aOQmtWmYjQQ7tdoiA9X5z1/exec';
 const API_URL = window.QLT_API_URL || EXEC_URL;
 const IS_GAS = !!(window.google && google.script && google.script.run);
@@ -407,12 +455,197 @@ function cmpVer(a, b) {
 }
 const shortLabel = s => String(s || '').replace(/^jornada\s*/i, 'J');
 const shortTeam = s => String(s || '').replace(/\s*\([^)]*\)\s*$/, '');
+/* ---------- Resultados desde ESPN (se ejecuta en el navegador) ----------
+   ESPN deja leer sus marcadores desde el navegador (no desde los servidores de Google).
+   Aquí se emparejan los 14 partidos + pleno de una jornada con los partidos de ESPN. */
+const ESPN_BASE = 'https://site.api.espn.com/apis/site/v2/sports/soccer/';
+const ESPN_LIGAS = { M: ['esp.1', 'esp.2', 'uefa.champions', 'uefa.europa', 'uefa.europa.conf', 'esp.copa_del_rey'], F: ['esp.w.1', 'uefa.wchampions'] };
+const EQ_GENERICOS = new Set(['fc', 'cf', 'cd', 'ud', 'sd', 'sad', 'rcd', 'rc', 'ca', 'de', 'del', 'la', 'el', 'w', 'femenino', 'women', 'balompie', 'futbol', 'ac', 'as', 'sc', 'sv', 'fk', 'sk', 'afc', 'calcio', 'club', 'the']);
+const EQ_EXACTOS = {
+  'sporting': 'sporting gijon', 'gijon': 'sporting gijon', 'espanol': 'espanyol', 'atletico': 'atletico madrid', 'at madrid': 'atletico madrid',
+  'athletic': 'athletic', 'athletic club': 'athletic', 'ath club': 'athletic', 'athletic bilbao': 'athletic', 'racing': 'racing santander',
+  'racing de santander': 'racing santander', 'rayo': 'rayo vallecano', 'oviedo': 'real oviedo', 'valladolid': 'real valladolid',
+  'celta vigo': 'celta', 'rc celta': 'celta', 'celta fortuna': 'celta b', 'rc celta fortuna': 'celta b', 'real sociedad ii': 'real sociedad b',
+  'napoles': 'napoli', 'oporto': 'porto', 'fc porto': 'porto', 'union sg': 'union saint gilloise', 'union st gilloise': 'union saint gilloise',
+  'plzen': 'viktoria plzen', 'omonia': 'omonia nicosia', 'logrono': 'dux logrono', 'badalona w': 'badalona', 'costa adeje tenerife': 'tenerife',
+  'inter': 'inter milan', 'inter de milan': 'inter milan', 'bayern munich': 'bayern', 'bayern munchen': 'bayern', 'bayern de munich': 'bayern',
+  'psg': 'paris saint germain', 'paris sg': 'paris saint germain', 'manchester utd': 'manchester united', 'man united': 'manchester united', 'man city': 'manchester city'
+};
+function eqNorm(nombre) {
+  let s = String(nombre || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  const fem = /\(\s*f\s*\)|femenino|women/.test(s);
+  s = s.replace(/\([^)]*\)/g, ' ').replace(/[.'’]/g, ' ').replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
+  s = s.replace(/\br\s+(sociedad|oviedo|valladolid|zaragoza|betis|madrid|santander)\b/g, 'real $1').replace(/\bat\s+madrid\b/g, 'atletico madrid');
+  if (EQ_EXACTOS[s]) s = EQ_EXACTOS[s];
+  const toks = s.split(' ').filter(t => t && !EQ_GENERICOS.has(t)).map(t => (t === 'ii' || t === 'b') ? 'b' : t);
+  const s2 = toks.join(' ');
+  return { fem, toks: (EQ_EXACTOS[s2] || s2).split(' ').filter(Boolean) };
+}
+function tokIgual(a, b) {
+  if (a === b) return true;
+  if (a.length >= 4 && b.length >= 4 && (a.startsWith(b) || b.startsWith(a))) return true;
+  if (a.length >= 5 && b.length >= 5 && Math.abs(a.length - b.length) <= 1) {
+    let i = 0, j = 0, dif = 0;
+    while (i < a.length && j < b.length) { if (a[i] === b[j]) { i++; j++; continue; } if (++dif > 1) return false; if (a.length > b.length) i++; else if (b.length > a.length) j++; else { i++; j++; } }
+    return dif + (a.length - i) + (b.length - j) <= 1;
+  }
+  return false;
+}
+function eqSim(ta, tb) {   // Dice con tokens "parecidos"
+  if (!ta.length || !tb.length) return 0;
+  const usados = new Set(); let m = 0;
+  ta.forEach(a => { const k = tb.findIndex((b, idx) => !usados.has(idx) && tokIgual(a, b)); if (k !== -1) { usados.add(k); m++; } });
+  return 2 * m / (ta.length + tb.length);
+}
+function golesPleno(n) { n = Number(n); return n >= 3 ? 'M' : String(n); }
+// eventos: [{ fecha, liga, fem, local:[nombres], visitante:[nombres], gl, gv, estado ('pre'|'in'|'post'), detalle }]
+function emparejarJornada(j, eventos) {
+  const lista = j.matches.map(m => ({ num: String(m.num), home: m.home, away: m.away }))
+    .concat([{ num: '15', home: j.pleno.home, away: j.pleno.away }]);
+  const cand = [];
+  lista.forEach((m, i) => {
+    const h = eqNorm(m.home), a = eqNorm(m.away), fem = h.fem || a.fem;
+    eventos.forEach((e, k) => {
+      if (e.fem !== fem) return;
+      const sh = Math.max(...e.local.map(n => eqSim(h.toks, eqNorm(n).toks))), sa = Math.max(...e.visitante.map(n => eqSim(a.toks, eqNorm(n).toks)));
+      if (sh >= 0.5 && sa >= 0.5) cand.push({ i, k, s: sh + sa, alReves: false });
+      const rh = Math.max(...e.visitante.map(n => eqSim(h.toks, eqNorm(n).toks))), ra = Math.max(...e.local.map(n => eqSim(a.toks, eqNorm(n).toks)));
+      if (rh >= 0.5 && ra >= 0.5) cand.push({ i, k, s: rh + ra - 0.3, alReves: true });
+    });
+  });
+  cand.sort((x, y) => y.s - x.s);
+  const asignado = {}, usado = new Set();
+  cand.forEach(c => { if (asignado[c.i] || usado.has(c.k)) return; asignado[c.i] = c; usado.add(c.k); });
+  return lista.map((m, i) => {
+    const c = asignado[i];
+    if (!c) return { num: m.num, home: m.home, away: m.away, encontrado: false };
+    const e = eventos[c.k];
+    const gl = c.alReves ? e.gv : e.gl, gv = c.alReves ? e.gl : e.gv;
+    const signo = gl > gv ? '1' : gl < gv ? '2' : 'X';
+    return { num: m.num, home: m.home, away: m.away, encontrado: true, espn: (c.alReves ? e.visitante[0] + ' - ' + e.local[0] : e.local[0] + ' - ' + e.visitante[0]),
+      liga: e.liga, fecha: e.fecha, estado: e.estado, detalle: e.detalle || '', corto: e.corto || '', gl, gv, signo, ph: golesPleno(gl), pa: golesPleno(gv), seguro: c.s >= 1.6 };
+  });
+}
+function espnEventos(json, liga) {
+  return ((json && json.events) || []).map(ev => {
+    const c = ev.competitions[0];
+    const h = c.competitors.find(x => x.homeAway === 'home'), a = c.competitors.find(x => x.homeAway === 'away');
+    const nom = t => [t.team.displayName, t.team.shortDisplayName, t.team.name, t.team.location].filter(Boolean);
+    return { fecha: ev.date, liga, fem: ESPN_LIGAS.F.includes(liga), local: nom(h), visitante: nom(a), gl: Number(h.score || 0), gv: Number(a.score || 0),
+      estado: ev.status.type.state, detalle: ev.status.type.name || '', corto: ev.status.type.shortDetail || '', id: ev.id };
+  });
+}
+const espnCache = {};   // "liga|día" → { t, ev }
+const ymdLocal = d => d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0');
+// Consulta ESPN solo los días y competiciones que pueden tener partidos de esa jornada.
+function espnParaJornada(j, opts) {
+  opts = opts || {};
+  const creada = Number(j.createdTs) || (Date.now() - 7 * 864e5);
+  let ini = creada - 864e5;
+  if (opts.recientes) ini = Math.max(ini, Date.now() - 6 * 864e5);
+  const fin = Math.min(Date.now(), creada + 12 * 864e5);
+  const textos = j.matches.map(m => m.home + ' ' + m.away).concat([j.pleno.home + ' ' + j.pleno.away]).join(' ');
+  const fem = /\(\s*f\s*\)/i.test(textos);
+  const tareas = [];
+  for (let t = ini; t <= fin + 1; t += 864e5) {
+    const d = new Date(t), dd = ymdLocal(d), entreSemana = d.getDay() >= 2 && d.getDay() <= 4;
+    let ligas = ['esp.1', 'esp.2'];
+    if (fem) ligas.push('esp.w.1');
+    if (entreSemana) ligas = ligas.concat(['uefa.champions', 'uefa.europa', 'uefa.europa.conf', 'esp.copa_del_rey']).concat(fem ? ['uefa.wchampions'] : []);
+    ligas.forEach(l => tareas.push([l, dd]));
+  }
+  return espnDescargar(tareas, opts).then(r => ({ filas: emparejarJornada(j, r.eventos), errores: r.errores, consultas: tareas.length }));
+}
+// Descarga varias (competición, día) de ESPN, 6 a la vez, con memoria para no repetir lo que ya no cambia.
+function espnDescargar(tareas, opts) {
+  opts = opts || {};
+  const hoy = ymdLocal(new Date());
+  const eventos = {}; let i = 0, errores = 0;
+  const trabajador = async () => {
+    while (i < tareas.length) {
+      const [l, dd] = tareas[i++], k = l + '|' + dd, c = espnCache[k];
+      const cerrado = c && dd < hoy && !c.ev.some(e => e.estado === 'in');   // días pasados ya terminados: no se repiten
+      if (c && (cerrado || (!opts.fresco && Date.now() - c.t < 45000))) { c.ev.forEach(e => { eventos[e.id] = e; }); continue; }
+      try {
+        const r = await fetch(ESPN_BASE + l + '/scoreboard?dates=' + dd);
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const ev = espnEventos(await r.json(), l);
+        espnCache[k] = { t: Date.now(), ev };
+        ev.forEach(e => { eventos[e.id] = e; });
+      } catch (e) { errores++; }
+    }
+  };
+  return Promise.all([1, 2, 3, 4, 5, 6].map(trabajador)).then(() => {
+    if (errores && errores === tareas.length) throw new Error('No hay conexión con ESPN.');
+    return { eventos: Object.values(eventos), errores };
+  });
+}
+/* --- Próxima jornada: el servidor la lee de Mundo Deportivo; ESPN dice si cada partido es masculino o femenino y las fechas --- */
+const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+function textoFechas(fechas) {
+  if (!fechas.length) return '';
+  const a = new Date(Math.min(...fechas)), b = new Date(Math.max(...fechas));
+  if (ymdLocal(a) === ymdLocal(b)) return `${a.getDate()} ${MESES[a.getMonth()]} ${a.getFullYear()}`;
+  if (a.getMonth() === b.getMonth()) return `${a.getDate()}-${b.getDate()} ${MESES[a.getMonth()]} ${a.getFullYear()}`;
+  return `${a.getDate()} ${MESES[a.getMonth()]} - ${b.getDate()} ${MESES[b.getMonth()]} ${b.getFullYear()}`;
+}
+function generoYFechas(lista) {
+  const base = new Date(); base.setHours(12, 0, 0, 0);
+  const tareas = [];
+  for (let d = -1; d <= 9; d++) {
+    const dia = new Date(base.getTime() + d * 864e5), dd = ymdLocal(dia), semana = dia.getDay() >= 2 && dia.getDay() <= 4;
+    ['esp.1', 'esp.2', 'esp.w.1'].concat(semana ? ['uefa.champions', 'uefa.europa', 'uefa.europa.conf', 'esp.copa_del_rey', 'uefa.wchampions'] : []).forEach(l => tareas.push([l, dd]));
+  }
+  return espnDescargar(tareas, {}).then(r => lista.map(m => {
+    const h = eqNorm(m.home), a = eqNorm(m.away);
+    const mejor = { true: null, false: null };   // el mejor partido masculino y el mejor femenino
+    r.eventos.forEach(e => {
+      const sim = (x, nombres) => Math.max(...nombres.map(n => eqSim(x.toks, eqNorm(n).toks)));
+      const dh = sim(h, e.local), da = sim(a, e.visitante), rh = sim(h, e.visitante), ra = sim(a, e.local);
+      const sc = Math.max(dh >= 0.5 && da >= 0.5 ? dh + da : 0, rh >= 0.5 && ra >= 0.5 ? rh + ra - 0.3 : 0), b = mejor[e.fem];
+      if (sc >= 1.0 && (!b || sc > b.sc)) mejor[e.fem] = { sc, e };
+    });
+    const bf = mejor.true, bm = mejor.false;
+    if (bf && bm && Math.abs(bf.sc - bm.sc) < 0.2) return { fem: null, fecha: Date.parse(bm.e.fecha) };   // mismo cruce en las dos ligas: que decida el admin
+    const g = bf && (!bm || bf.sc > bm.sc) ? bf : bm;
+    return g ? { fem: g.e.fem, fecha: Date.parse(g.e.fecha) } : { fem: null, fecha: null };
+  }));
+}
+const conGenero = (nombre, fem) => String(nombre || '').replace(/\s*\((M|F)\)\s*$/i, '').trim() + (fem ? ' (F)' : ' (M)');
+function importarProxima(btn) {
+  const r = busy(btn, 'Buscando…');
+  setMsg('importa', 'Leyendo Mundo Deportivo…', '');
+  return adminCall('importarProxima', {}, 'importa', null).then(res => {
+    const lista = res.matches.concat([Object.assign({ num: 15 }, res.pleno)]);
+    setMsg('importa', 'Comprobando en ESPN cuáles son de fútbol femenino…', '');
+    return generoYFechas(lista).catch(() => null).then(info => {
+      const dudas = [];
+      lista.forEach((m, k) => {
+        const marcado = m.femHome === true || m.femAway === true;
+        const fem = marcado || (info && info[k].fem === true);
+        if (!marcado && !(info && info[k].fem !== null)) dudas.push(k < 14 ? String(k + 1) : 'pleno');
+        const home = conGenero(m.home, fem), away = conGenero(m.away, fem);
+        if (k < 14) { $(`[data-nm-home="${k + 1}"]`).value = home; $(`[data-nm-away="${k + 1}"]`).value = away; }
+        else { $('#nPH').value = home; $('#nPA').value = away; }
+      });
+      const fechas = info ? textoFechas(info.map(x => x.fecha).filter(Boolean)) : '';
+      if (fechas && !$('#nFechas').value.trim()) $('#nFechas').value = fechas;
+      const of = res.jornadaOficial ? ` (la ${res.jornadaOficial} de Loterías)` : '';
+      let t = `Traída la próxima jornada${of}: 14 partidos + pleno. Revisa los nombres y pulsa «Guardar jornada».`;
+      if (!info) t += ' No he podido consultar ESPN: comprueba a mano cuáles son (F).';
+      else if (dudas.length) t += ` No he podido confirmar si son (M) o (F): ${dudas.join(', ')}.`;
+      setMsg('importa', t, dudas.length || !info ? 'error' : 'success');
+      const det = $('#adm-nueva-body details.mini'); if (det) det.open = true;
+    });
+  }, () => {}).then(r);
+}
+
 
 /* ---------------- Estado ---------------- */
 const S = {
   data: null, dataAt: 0, loading: false, lastError: null, newVersion: null,
   tab: 'jugar',
-  me: '', showNames: false,
+  me: '', showNames: false, showMv: false,
   vote: { jid: null, picks: {}, ph: null, pa: null, dirty: false, sending: false, tried: false },
   op: { jid: null, d: [{ num: '', signos: '' }, { num: '', signos: '' }], t: '', dirty: false, sending: false },
   jview: null,
@@ -753,9 +986,70 @@ function afterHTML(j) {
       <div class="card-head"><h2>La peña</h2><span class="mono muted" style="font-size:12px">${j.entries.length} voto${j.entries.length === 1 ? '' : 's'}</span></div>
       <p class="hint">La columna <b>Peña</b> es lo más votado (empates juntos, p. ej. "1X"), con el recuento 1-X-2 debajo.</p>
       ${penaGrid(j, false)}
-      ${j.entries.length ? `<div class="btn-row"><button class="btn ghost small" data-act="csv">⬇ Descargar votos (CSV)</button></div>` : ''}
+      ${j.entries.length ? `<div class="btn-row"><button class="btn ghost small ${S.showMv ? 'on' : ''}" data-act="toggleMv">📋 Lo más votado en texto</button><button class="btn ghost small" data-act="csv">⬇ CSV</button></div>${S.showMv ? mvPanelHTML(j) : ''}` : ''}
     </div>
-    <div class="card">${opinionHTML(j)}</div>`;
+    <div class="card">${opinionHTML(j)}</div>
+    <div id="j-install">${installHTML()}</div>`;
+}
+/* ----- "Lo más votado" en texto, para copiar o mandar por WhatsApp ----- */
+function masVotadoTexto(j) {
+  const entries = j.entries, total = S.data.participantes.length;
+  const L = [`*Quiniela_LT · ${j.label}* — lo más votado (${entries.length}/${total} votos)`];
+  j.matches.forEach(m => {
+    const mv = mostVoted(entries.map(e => e.picks && e.picks[m.num]).filter(Boolean), SIGNOS);
+    L.push(`${m.num}. ${m.home} - ${m.away}: *${mv.winner}* (${mv.counts['1']}-${mv.counts.X}-${mv.counts['2']})`);
+  });
+  const g = w => w.length > 1 ? w.split('').join('/') : w;
+  const hh = mostVoted(entries.map(e => e.plenoHome).filter(Boolean), GOALS), aa = mostVoted(entries.map(e => e.plenoAway).filter(Boolean), GOALS);
+  L.push(`15. ${j.pleno.home} - ${j.pleno.away}: *${g(hh.winner)}-${g(aa.winner)}*`);
+  const sug = opinionSugerencia(opinionAgg(j));
+  if (sug.dobles.length || sug.triple) {
+    L.push('');
+    L.push(`Lo más propuesto: ${sug.dobles.map(d => `doble ${d.num} (${d.top.join('/')}) ×${d.names.length}`).concat(sug.triple ? [`triple ${sug.triple.num} ×${sug.triple.names.length}`] : []).join(' · ')}`);
+  }
+  const faltan = S.data.participantes.filter(p => !entryOf(j, p));
+  if (faltan.length) L.push(`_Faltan por votar: ${faltan.join(', ')}_`);
+  L.push('_(entre paréntesis, votos al 1-X-2; empates juntos)_');
+  return L.join('\n');
+}
+function mvPanelHTML(j) {
+  const t = masVotadoTexto(j);
+  return `<pre class="mv-text" id="mvText">${esc(t)}</pre>
+    <div class="btn-row"><button class="btn small" data-act="copyMv">Copiar</button>
+    <a class="btn ghost small" href="https://wa.me/?text=${encodeURIComponent(t)}" target="_blank" rel="noopener">Enviar por WhatsApp</a></div>`;
+}
+function copyText(t) {
+  const ok = () => toast('Copiado. Ya puedes pegarlo en WhatsApp.', 'success');
+  const plan2 = () => {
+    const ta = document.createElement('textarea');
+    ta.value = t; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.top = '-2000px';
+    document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, t.length);
+    let hecho = false; try { hecho = document.execCommand('copy'); } catch (e) { hecho = false; }
+    ta.remove();
+    if (hecho) { ok(); return; }
+    const pre = $('#mvText');
+    if (pre) { const r = document.createRange(); r.selectNodeContents(pre); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); }
+    toast('No he podido copiar solo: el texto está seleccionado, mantén pulsado y elige Copiar.', 'error');
+  };
+  try { if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(t).then(ok, plan2); return; } } catch (e) { /* plan B */ }
+  plan2();
+}
+
+/* ----- Instalar como app (solo en la versión de GitHub Pages) ----- */
+let installPrompt = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installPrompt = e; const el = $('#j-install'); if (el) el.innerHTML = installHTML(); });
+const isStandalone = () => (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+function installHTML() {
+  if (IS_GAS || isStandalone() || store.get('qlt_install_no')) return '';
+  const tactil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (window.matchMedia && (matchMedia('(pointer: coarse)').matches || matchMedia('(hover: none)').matches));
+  if (!tactil && !installPrompt) return '';
+  const ios = /iPhone|iPad|iPod/.test(navigator.userAgent);
+  let como;
+  if (installPrompt) como = `<div class="btn-row" style="margin-top:8px"><button class="btn small" data-act="installNow">Instalar la app</button></div>`;
+  else if (ios) como = `En Safari: botón <b>Compartir</b> (cuadrado con flecha ↑) → <b>Añadir a pantalla de inicio</b>.<br>Si la abriste desde WhatsApp, pulsa antes "Abrir en Safari".`;
+  else como = `En Chrome: menú <b>⋮</b> → <b>Instalar aplicación</b> (o "Añadir a pantalla de inicio").<br>Si la abriste desde WhatsApp, pulsa antes ⋮ → "Abrir en Chrome".`;
+  return `<div class="card install"><div class="card-head"><b class="mono" style="font-size:14px">📲 Tenla como app, con su icono</b><button class="linkbtn" data-act="installNo" aria-label="No volver a mostrar">✕</button></div>
+    <p class="hint" style="margin:6px 0 0">${como}</p></div>`;
 }
 function penaGrid(j, withResults) {
   const entries = j.entries;
@@ -830,23 +1124,62 @@ function opinionHTML(j) {
   }
   return `<h2>Dobles y triple</h2>${form}${opinionSummary(j)}`;
 }
-function opinionSummary(j) {
-  const agg = {};
+/* ----- Propuestas de dobles/triple: lo que más se repite y lo de cada uno ----- */
+const MIN_VOTOS_PROP = 2;
+function opinionAgg(j) {
+  const dob = {}, tri = {};
   j.opiniones.forEach(o => {
-    o.dobles.forEach(d => { const a = agg[d.num] = agg[d.num] || { d: {}, t: [] }; (a.d[d.signos] = a.d[d.signos] || []).push(o.name); });
-    if (o.triple) { const a = agg[o.triple] = agg[o.triple] || { d: {}, t: [] }; a.t.push(o.name); }
+    (o.dobles || []).forEach(d => {
+      const a = dob[d.num] = dob[d.num] || { num: Number(d.num), names: [], signos: {} };
+      a.names.push(o.name); (a.signos[d.signos] = a.signos[d.signos] || []).push(o.name);
+    });
+    if (o.triple) { const a = tri[o.triple] = tri[o.triple] || { num: Number(o.triple), names: [] }; a.names.push(o.name); }
   });
-  const nums = Object.keys(agg).map(Number).sort((a, b) => a - b);
-  let h = `<h3>Lo que propone la peña</h3>`;
-  if (!nums.length) h += `<p class="hint">Nadie ha propuesto nada todavía.</p>`;
+  const orden = (a, b) => b.names.length - a.names.length || a.num - b.num;
+  const dobles = Object.values(dob).sort(orden);
+  dobles.forEach(d => {   // los signos más elegidos para ese doble (empates juntos, "1X/X2")
+    const max = Math.max(...Object.values(d.signos).map(x => x.length));
+    d.top = ['1X', 'X2', '12'].filter(x => d.signos[x] && d.signos[x].length === max);
+  });
+  return { dobles, triples: Object.values(tri).sort(orden) };
+}
+function opinionSugerencia(agg) {
+  const ds = agg.dobles.filter(d => d.names.length >= MIN_VOTOS_PROP);
+  const dobles = ds.slice(0, 2);
+  const empateD = dobles.length === 2 ? ds.slice(2).filter(d => d.names.length === dobles[1].names.length) : [];
+  const ts = agg.triples.filter(t => t.names.length >= MIN_VOTOS_PROP && !dobles.some(d => d.num === t.num));
+  const triple = ts[0] || null;
+  const empateT = triple ? ts.slice(1).filter(t => t.names.length === triple.names.length) : [];
+  return { dobles, triple, empateD, empateT };
+}
+const matchShort = (j, n) => { const m = j.matches.find(x => Number(x.num) === Number(n)) || { home: '?', away: '?' }; return `${shortTeam(m.home)} – ${shortTeam(m.away)}`; };
+function opinionSummary(j) {
+  const agg = opinionAgg(j), sug = opinionSugerencia(agg), n = j.opiniones.length;
+  const hotD = agg.dobles.filter(d => d.names.length >= MIN_VOTOS_PROP), hotT = agg.triples.filter(t => t.names.length >= MIN_VOTOS_PROP);
+  const sub = t => `<span class="muted" style="font-family:var(--font-mono);font-size:11.5px">· ${t}</span>`;
+  let h = `<h3>Lo más propuesto ${sub('con 2 votos o más')}</h3>`;
+  if (!n) h += `<p class="hint">Nadie ha propuesto nada todavía.</p>`;
+  else if (!hotD.length && !hotT.length) h += `<p class="hint">Todavía no coincide nadie: ninguna propuesta tiene 2 votos.</p>`;
   else {
-    h += `<div class="op-list">` + nums.map(n => {
-      const m = j.matches.find(x => Number(x.num) === n) || { home: '?', away: '?' }, a = agg[n];
-      const tags = Object.keys(a.d).map(s => `<span class="tag" title="${esc(a.d[s].join(', '))}">doble ${esc(s)} ×${a.d[s].length}</span>`).join('')
-        + (a.t.length ? `<span class="tag t3" title="${esc(a.t.join(', '))}">triple ×${a.t.length}</span>` : '');
-      const quien = Object.keys(a.d).map(s => `${s}: ${a.d[s].join(', ')}`).concat(a.t.length ? ['triple: ' + a.t.join(', ')] : []).join(' · ');
-      return `<div class="op-item"><b>${n}.</b> ${esc(shortTeam(m.home))} – ${esc(shortTeam(m.away))}<br>${tags}<br><span class="muted" style="font-size:11px">${esc(quien)}</span></div>`;
-    }).join('') + `</div>`;
+    const fila = (kind, num, sig, names, t3) => `<div class="cons-row ${t3 ? 't3' : ''}"><span class="kind">${kind}${sig ? `<b class="sig">${esc(sig)}</b>` : ''}</span><span class="mnum ${t3 ? 'gold' : ''}">${num}</span>
+      <span class="ct"><span class="tm">${esc(matchShort(j, num))}</span><span class="who">${esc(names.join(', '))}</span></span>
+      <span class="votes"><span class="dots" aria-hidden="true">${'●'.repeat(Math.min(names.length, 9))}</span>${names.length}</span></div>`;
+    h += `<div class="cons">${hotD.map(d => fila('Doble', d.num, d.top.join('/'), d.names, false)).join('')}${hotT.map(t => fila('Triple', t.num, '', t.names, true)).join('')}</div>`;
+    const ds = sug.dobles.map(d => `${d.num} (${d.top.join('/')})`);
+    h += `<p class="sug">👉 <b>Boleto sugerido:</b> ${ds.length ? `doble${ds.length > 1 ? 's' : ''} ${ds.join(' y ')}` : 'sin dobles con 2 votos'} · ${sug.triple ? `triple ${sug.triple.num}` : 'sin triple con 2 votos'}`
+      + (sug.empateD.length ? `<br><span class="muted">Empatado para el 2.º doble: ${sug.empateD.map(d => d.num).join(', ')}.</span>` : '')
+      + (sug.empateT.length ? `<br><span class="muted">Empatado para el triple: ${sug.empateT.map(t => t.num).join(', ')}.</span>` : '') + `</p>`;
+  }
+  if (n) {
+    const hd = new Set(hotD.map(d => d.num)), ht = new Set(hotT.map(t => t.num));
+    const orden = S.data.participantes;
+    const ops = j.opiniones.slice().sort((a, b) => orden.indexOf(a.name) - orden.indexOf(b.name));
+    const sinProp = orden.filter(p => !j.opiniones.some(o => o.name === p));
+    h += `<h3>Propuestas de cada uno ${sub(`${n} de ${orden.length}`)}</h3><div class="per-list">` + ops.map(o => `<div class="per ${o.name === S.me ? 'me' : ''}"><b class="pname">${esc(o.name)}</b><span>`
+      + o.dobles.map(d => `<span class="chip ${hd.has(Number(d.num)) ? 'hot' : ''}" title="${esc(matchShort(j, d.num))}">D${d.num} · ${esc(d.signos)}</span>`).join('')
+      + (o.triple ? `<span class="chip t ${ht.has(Number(o.triple)) ? 'hot' : ''}" title="${esc(matchShort(j, o.triple))}">T${o.triple}</span>` : '')
+      + `</span></div>`).join('') + `</div>`
+      + `<p class="hint" style="margin:8px 0 0">D = doble · T = triple · en oscuro, lo que coincide con alguien más.${sinProp.length ? `<br>Sin propuesta: ${esc(sinProp.join(', '))}.` : ''}</p>`;
   }
   if (j.entries.length >= 2) {
     const div = j.matches.map(m => {
@@ -901,12 +1234,69 @@ function renderJornada() {
       <button class="arrow" data-act="jstep" data-d="1" ${idx >= list.length - 1 ? 'disabled' : ''} aria-label="Jornada siguiente">›</button>
       <div class="jsel-meta">${stateFor(j)}${j.activa ? ' <span class="pill">Activa</span>' : ''}${j.fechas ? `<span>${esc(fmtFechas(j.fechas))}</span>` : ''}</div>
     </div></div>
+    ${liveAplica(j) ? `<div class="card" id="liveCard">${liveCardHTML(j)}</div>` : ''}
     <div class="card">${boletoRealHTML(j)}</div>
     <div class="card">${aciertosHTML(j)}</div>
     <div class="card"><h2>Boletos de la peña</h2>${canSeePena(j)
       ? `<p class="hint">Verde = acertado, rojo = fallado. 🥇 = quien más lleva.</p>${penaGrid(j, true)}`
       : `<p class="hint" style="margin:0">🔒 La votación de esta jornada sigue abierta. Sella tu quiniela (pestaña Jugar) para ver los boletos de los demás.</p>`}</div>
     ${j.opiniones.length && canSeePena(j) ? `<div class="card"><h2>Dobles y triple propuestos</h2>${opinionSummary(j)}</div>` : ''}`;
+  if (liveAplica(j)) loadLive(j);
+}
+/* ----- En directo: marcadores de ESPN (provisionales, no se guardan) ----- */
+const LIVE = {};
+function liveAplica(j) {
+  if (!j || !j.matches.length) return false;
+  if (j.estado.decididos >= j.matches.length && j.resultado.plenoHome && j.resultado.plenoAway) return false;
+  const c = Number(j.createdTs) || 0;
+  return c ? (Date.now() - c) < 16 * 864e5 : !!j.activa;
+}
+function loadLive(j, forzar) {
+  const L = LIVE[j.id] = LIVE[j.id] || {};
+  if (L.cargando || (!forzar && L.at && Date.now() - L.at < 80000)) return;
+  L.cargando = true; updateLiveCard(j);
+  espnParaJornada(j, { recientes: true, fresco: !!forzar }).then(r => { L.filas = r.filas; L.at = Date.now(); L.error = null; }, e => { L.error = e.message || 'error'; })
+    .then(() => { L.cargando = false; updateLiveCard(j); });
+}
+function updateLiveCard(j) { const el = $('#liveCard'); if (el && S.tab === 'jornada' && S.jview === j.id) el.innerHTML = liveCardHTML(j); }
+function resultadoProvisional(j, filas) {
+  const picks = Object.assign({}, j.resultado.picks); let ph = j.resultado.plenoHome, pa = j.resultado.plenoAway, extra = 0;
+  filas.forEach(f => {
+    if (!f.encontrado || f.estado === 'pre') return;
+    if (f.num === '15') { if (!(ph && pa)) { ph = f.ph; pa = f.pa; } return; }
+    if (!picks[f.num]) { picks[f.num] = f.signo; extra++; }
+  });
+  return { picks, plenoHome: ph, plenoAway: pa, extra };
+}
+const horaLocal = iso => { try { return new Date(iso).toLocaleString('es-ES', { weekday: 'short', hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } };
+function liveCardHTML(j) {
+  const L = LIVE[j.id];
+  let h = `<div class="card-head"><h2>En directo</h2><span class="mono muted" style="font-size:12px">ESPN${L && L.at ? ' · ' + esc(relTime(L.at)) : ''} <button class="linkbtn" data-act="liveRefresh" aria-label="Actualizar marcadores">↻</button></span></div>`;
+  if (!L || (L.cargando && !L.filas)) return h + `<p class="hint">Buscando marcadores…</p><div class="sk"></div><div class="sk s"></div>`;
+  if (!L.filas) return h + `<p class="hint">No se han podido cargar los marcadores (${esc(L.error || '')}). Toca ↻ para reintentar.</p>`;
+  const prov = resultadoProvisional(j, L.filas);
+  h += `<p class="hint">Marcadores de ESPN. En verde, lo que ya ha guardado el admin; con borde, lo provisional.</p><div class="live-list">` + L.filas.map(f => {
+    const oficial = f.num === '15' ? (j.resultado.plenoHome && j.resultado.plenoAway ? j.resultado.plenoHome + '-' + j.resultado.plenoAway : '') : (j.resultado.picks[f.num] || '');
+    let marcador = '<span class="muted">·</span>', estado = 'no está en ESPN', signo = '';
+    if (f.encontrado) {
+      if (f.estado === 'pre') estado = horaLocal(f.fecha);
+      else { marcador = `${f.gl}-${f.gv}`; estado = f.estado === 'in' ? (f.corto || 'En juego') : 'Final'; signo = f.num === '15' ? `${f.ph}-${f.pa}` : f.signo; }
+    }
+    return `<div class="live-row ${f.encontrado ? f.estado : ''}"><span class="mnum ${f.num === '15' ? 'gold' : ''}">${f.num}</span>
+      <span class="lt"><span class="ltt">${esc(shortTeam(f.home))} – ${esc(shortTeam(f.away))}</span><small>${esc(estado)}</small></span>
+      <span class="ls">${marcador}</span><span class="lsig">${oficial ? `<b title="Guardado por el admin">${esc(oficial)}</b>` : (signo ? `<i title="Provisional">${esc(signo)}</i>` : '')}</span></div>`;
+  }).join('') + `</div>`;
+  if (prov.extra > 0 && canSeePena(j) && j.entries.length) {
+    const total = j.matches.length;
+    const filas = j.entries.map(e => { let a = 0, d = 0; for (let i = 1; i <= total; i++) { const r = prov.picks[i]; if (!r) continue; d++; if (e.picks && e.picks[i] === r) a++; } return { name: e.name, a, d }; }).sort((x, y) => y.a - x.a);
+    let boleto = '';
+    if (j.combiInfo.tieneCombinacion) {
+      let a = 0, d = 0; for (let i = 1; i <= total; i++) { const r = prov.picks[i]; if (!r) continue; d++; if ((j.combinacion.marcados[i] || []).includes(r)) a++; }
+      boleto = `<p class="mono" style="font-size:13px;margin:4px 0 8px">Boleto real: <b>${a}/${d}</b></p>`;
+    }
+    h += `<h3>Si acabara ahora</h3>${boleto}<table class="tbl"><tbody>${filas.map((r, i) => `<tr class="${r.name === S.me ? 'me' : ''}"><td style="width:28px"><span class="pos">${i + 1}</span></td><td>${i === 0 || r.a === filas[0].a ? '🥇 ' : ''}${esc(r.name)}</td><td class="num"><b>${r.a}</b>/${r.d}</td></tr>`).join('')}</tbody></table>`;
+  }
+  return h;
 }
 function boletoRealHTML(j) {
   const c = j.combinacion, ci = j.combiInfo;
@@ -1088,6 +1478,9 @@ function admResHTML() {
   const dec = j.matches.filter(m => st.picks[m.num]).length;
   return `<p class="hint">Toca el signo de cada partido ya decidido (tócalo otra vez para quitarlo). No hace falta esperar a que acabe la jornada.</p>
     <div class="field"><label class="field-label" for="resSel">Jornada</label><select id="resSel" data-chg="resJ">${jornadaOptions(st.jid)}</select></div>
+    <div class="btn-row" style="margin-top:0"><button class="btn ghost" data-act="espnRes">⚡ Traer resultados de ESPN</button>
+      <label class="check"><input type="checkbox" data-chg="espnAuto" ${S.admin.espnAuto ? 'checked' : ''}> Automático mientras esté abierto</label></div>
+    ${S.admin.espnInfo && S.admin.espnInfo.jid === st.jid ? S.admin.espnInfo.html : ''}
     ${rows}
     <div class="pleno"><div class="pleno-head"><span class="mnum gold">15</span>${esc(j.pleno.home)} – ${esc(j.pleno.away)}</div>
       <div class="pleno-team"><span class="pname">${esc(j.pleno.home)}</span><span class="bubs">${gb('h', st.ph)}</span></div>
@@ -1113,6 +1506,52 @@ function resChanged() {
   const st = S.admin.res; st.dirty = true;
   const body = $('#adm-res-body'); if (body) body.innerHTML = admResHTML();
 }
+/* --- Resultados desde ESPN (rellena solo lo que está vacío; nunca cambia lo que ya tienes) --- */
+function espnTraerAdmin(auto) {
+  if (!S.admin.res) return Promise.resolve(0);
+  const jid = S.admin.res.jid, j = J(jid); if (!j) return Promise.resolve(0);
+  if (!auto) { S.admin.espnInfo = { jid, html: `<p class="hint">Buscando en ESPN…</p>` }; const b = $('#adm-res-body'); if (b) b.innerHTML = admResHTML(); }
+  return espnParaJornada(j, { fresco: !auto }).then(r => {
+    const st = S.admin.res;   // el estado actual (puede haberse recreado mientras tanto)
+    if (!st || st.jid !== jid || st.sending) return 0;
+    const nuevos = [], difs = [], vivos = [], pend = [], noEnc = [], revisar = [];
+    r.filas.forEach(f => {
+      if (!f.encontrado) { noEnc.push(f); return; }
+      if (f.estado === 'pre') { pend.push(f); return; }
+      if (f.estado === 'in') { vivos.push(f); return; }
+      if (/AET|PEN|EXTRA|SHOOT/i.test(f.detalle)) { revisar.push(f); return; }
+      if (f.num === '15') {
+        if (!st.ph && !st.pa) { st.ph = f.ph; st.pa = f.pa; nuevos.push(f); }
+        else if (st.ph !== f.ph || st.pa !== f.pa) difs.push(f);
+      } else {
+        const act = st.picks[f.num];
+        if (!act) { st.picks[f.num] = f.signo; nuevos.push(f); } else if (act !== f.signo) difs.push(f);
+      }
+    });
+    if (nuevos.length) st.dirty = true;
+    const li = (f, extra) => `<li><b>${f.num}</b> ${esc(shortTeam(f.home))} – ${esc(shortTeam(f.away))}${f.encontrado && f.estado !== 'pre' ? ` · ${f.gl}-${f.gv}` : ''}${extra ? ' · ' + esc(extra) : ''}</li>`;
+    const hora = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+    let h = `<div class="espn-box"><p class="mono" style="margin:0 0 4px;font-size:12.5px">ESPN · ${hora}: <b>${nuevos.length}</b> nuevo${nuevos.length === 1 ? '' : 's'} · ${vivos.length} en juego · ${pend.length} sin empezar${noEnc.length ? ` · ${noEnc.length} sin encontrar` : ''}</p>`;
+    if (nuevos.length) h += `<p class="hint" style="margin:0 0 4px">${auto ? 'Marcados y guardados solos: ' : 'Marcados abajo (revisa y pulsa <b>Guardar</b>): '}${nuevos.map(f => f.num + (f.num === '15' ? ` (${f.ph}-${f.pa})` : ` (${f.signo})`)).join(', ')}.</p>`;
+    if (difs.length) h += `<p class="bad-txt mono" style="margin:6px 0 2px;font-size:12px">⚠ ESPN dice otra cosa (no lo he cambiado, decide tú):</p><ul class="espn-ul">${difs.map(f => li(f, 'ESPN: ' + (f.num === '15' ? f.ph + '-' + f.pa : f.signo))).join('')}</ul>`;
+    if (revisar.length) h += `<p class="bad-txt mono" style="margin:6px 0 2px;font-size:12px">⚠ Con prórroga o penaltis (cuenta el resultado a los 90'): márcalos tú:</p><ul class="espn-ul">${revisar.map(f => li(f)).join('')}</ul>`;
+    if (noEnc.length) h += `<p class="mono muted" style="margin:6px 0 2px;font-size:12px">No están en ESPN (aplazados o sin cobertura): márcalos tú.</p><ul class="espn-ul">${noEnc.map(f => li(f)).join('')}</ul>`;
+    if (vivos.length) h += `<p class="mono muted" style="margin:6px 0 2px;font-size:12px">En juego ahora:</p><ul class="espn-ul">${vivos.map(f => li(f, f.corto)).join('')}</ul>`;
+    S.admin.espnInfo = { jid: st.jid, html: h + `</div>` };
+    const b = $('#adm-res-body'); if (b) b.innerHTML = admResHTML();
+    return nuevos.length;
+  }, err => {
+    S.admin.espnInfo = { jid, html: `<p class="msg error">No se ha podido consultar ESPN: ${esc(err.message)}</p>` };
+    const b = $('#adm-res-body'); if (b) b.innerHTML = admResHTML();
+    return 0;
+  });
+}
+function guardarResultados(btn) {
+  const st = S.admin.res; st.sending = true; const r = busy(btn);
+  return adminCall('saveResultado', { jornadaId: st.jid, resultado: { picks: Object.assign({}, st.picks), plenoHome: st.ph, plenoAway: st.pa } }, 'res', 'Resultados guardados.')
+    .then(() => { st.dirty = false; }, () => {}).then(() => { st.sending = false; r(); const b = $('#adm-res-body'); if (b) b.innerHTML = admResHTML(); });
+}
+
 /* --- Boleto real --- */
 function combState() {
   const A = S.admin;
@@ -1139,7 +1578,7 @@ function admCombHTML() {
   const gb = (side, sel) => GOALS.map(g => `<button class="bub gold ${sel === g ? 'on' : ''}" data-act="combPleno" data-side="${side}" data-v="${g}">${g}</button>`).join('');
   return `<p class="hint">Lo que lleva el boleto físico. Puedes marcar varios signos por partido. <b>Al guardarlo se cierra la votación de esa jornada.</b></p>
     <div class="field"><label class="field-label" for="combSel">Jornada</label><select id="combSel" data-chg="combJ">${jornadaOptions(st.jid)}</select></div>
-    <div class="btn-row" style="margin-top:0"><button class="btn ghost" data-act="combFill">✨ Rellenar con lo más votado</button></div>
+    <div class="btn-row" style="margin-top:0"><button class="btn ghost" data-act="combFill">✨ Rellenar con lo más votado y propuesto</button></div>
     ${j.opiniones.length ? `<details class="mini"><summary>Ver propuestas de dobles y triple (${j.opiniones.length})</summary>${opinionSummary(j)}</details>` : ''}
     ${rows}
     <p class="count-line ${okForma ? 'ok-txt' : 'bad-txt'}">${dob} doble${dob === 1 ? '' : 's'} · ${tri} triple${tri === 1 ? '' : 's'}${vac ? ` · ${vac} sin marcar` : ''} ${okForma ? '✓' : '(lo normal: 2 dobles y 1 triple)'}</p>
@@ -1161,8 +1600,11 @@ function combFill() {
   j.matches.forEach(m => { st.marcados[m.num] = mostVoted(j.entries.map(e => e.picks && e.picks[m.num]).filter(Boolean), SIGNOS).winner.split(''); });
   const h = mostVoted(j.entries.map(e => e.plenoHome).filter(Boolean), GOALS).winner, a = mostVoted(j.entries.map(e => e.plenoAway).filter(Boolean), GOALS).winner;
   if (h.length === 1) st.ph = h; if (a.length === 1) st.pa = a;
+  const sug = opinionSugerencia(opinionAgg(j)), extra = [];
+  sug.dobles.forEach(d => { st.marcados[d.num] = d.top[0].split(''); extra.push(`doble ${d.num} (${d.top[0]})`); });
+  if (sug.triple) { st.marcados[sug.triple.num] = SIGNOS.slice(); extra.push(`triple ${sug.triple.num}`); }
   combChanged();
-  setMsg('comb', 'Rellenado con lo más votado (los empates quedan como dobles). Ahora añade los dobles y el triple.', 'success');
+  setMsg('comb', 'Rellenado con lo más votado (los empates salen como dobles)' + (extra.length ? ` y con lo más propuesto: ${extra.join(', ')}` : '. Nadie ha coincidido aún en dobles/triple: márcalos tú') + '. Revísalo antes de guardar.', 'success');
 }
 /* --- Nueva jornada --- */
 function admNuevaHTML() {
@@ -1174,7 +1616,10 @@ function admNuevaHTML() {
     <div class="row2"><div class="field"><label class="field-label" for="nNum">Número</label><input type="number" id="nNum" min="1" value="${next}"></div>
       <div class="field"><label class="field-label" for="nLabel">Etiqueta</label><input type="text" id="nLabel" value="Jornada ${next}"></div></div>
     <div class="field"><label class="field-label" for="nFechas">Fechas</label><input type="text" id="nFechas" placeholder="29-30 noviembre 2026"></div>
-    <h3>Pegar calendario (opcional)</h3>
+    <div class="btn-row" style="margin-top:4px"><button class="btn ghost" data-act="importMD">📥 Traer la próxima jornada</button></div>
+    <p class="hint" style="margin-top:6px">La lee de Mundo Deportivo y rellena todo abajo. No guarda nada hasta que pulses «Guardar jornada».</p>
+    ${msgHTML('importa')}
+    <h3>O pegar el calendario</h3>
     <p class="hint">Pega el listado tal cual ("1." / Equipo / "-" / Equipo; la línea "* 15. Equipo - Equipo" marca el pleno) y se rellena solo. Revísalo antes de guardar.</p>
     <textarea id="nPaste" rows="5" placeholder="1.&#10;Levante (M)&#10;-&#10;Betis (M)&#10;2.&#10;..."></textarea>
     <div class="btn-row"><button class="btn ghost" data-act="parse">🪄 Rellenar automáticamente</button></div>
@@ -1301,6 +1746,10 @@ const ACTIONS = {
   pleno: el => onPleno(el.dataset.side, el.dataset.v),
   seal: () => seal(),
   csv: () => exportCsv(),
+  toggleMv: () => { S.showMv = !S.showMv; const j = activeJ(); if (j) $('#j-after').innerHTML = afterHTML(j); if (S.showMv) { const p = $('#mvText'); if (p) p.scrollIntoView({ behavior: 'smooth', block: 'center' }); } },
+  copyMv: () => { const j = activeJ(); if (j) copyText(masVotadoTexto(j)); },
+  installNow: () => { if (!installPrompt) return; installPrompt.prompt(); installPrompt.userChoice.then(() => { installPrompt = null; const el = $('#j-install'); if (el) el.innerHTML = installHTML(); }); },
+  installNo: () => { store.set('qlt_install_no', '1'); const el = $('#j-install'); if (el) el.innerHTML = ''; },
   opSig: el => { const j = activeJ(); const o = opinionState(j); o.d[+el.dataset.i].signos = el.dataset.v; o.dirty = true; rerenderOpinion(); },
   saveOpinion: () => saveOpinion(),
   jstep: el => { const list = S.data.jornadas; const i = list.findIndex(j => j.id === S.jview) + Number(el.dataset.d); if (list[i]) { S.jview = list[i].id; renderJornada(); } },
@@ -1313,11 +1762,9 @@ const ACTIONS = {
   },
   resPick: el => { const st = S.admin.res; const m = el.dataset.m, v = el.dataset.v; if (st.picks[m] === v) delete st.picks[m]; else st.picks[m] = v; resChanged(); },
   resPleno: el => { const st = S.admin.res; const k = el.dataset.side === 'h' ? 'ph' : 'pa'; st[k] = st[k] === el.dataset.v ? null : el.dataset.v; resChanged(); },
-  saveRes: el => {
-    const st = S.admin.res; st.sending = true; const r = busy(el);
-    adminCall('saveResultado', { jornadaId: st.jid, resultado: { picks: Object.assign({}, st.picks), plenoHome: st.ph, plenoAway: st.pa } }, 'res', 'Resultados guardados.')
-      .then(() => { st.dirty = false; }, () => {}).then(() => { st.sending = false; r(); const b = $('#adm-res-body'); if (b) b.innerHTML = admResHTML(); });
-  },
+  saveRes: el => { guardarResultados(el); },
+  espnRes: () => { espnTraerAdmin(false); },
+  liveRefresh: () => { const j = J(S.jview); if (j) loadLive(j, true); },
   combPick: el => { const st = S.admin.comb; const m = el.dataset.m, v = el.dataset.v; const arr = st.marcados[m] = st.marcados[m] || []; const i = arr.indexOf(v); if (i === -1) arr.push(v); else arr.splice(i, 1); arr.sort((a, b) => SIGNOS.indexOf(a) - SIGNOS.indexOf(b)); combChanged(); },
   combPleno: el => { const st = S.admin.comb; const k = el.dataset.side === 'h' ? 'ph' : 'pa'; st[k] = el.dataset.v; combChanged(); },
   combA8: el => { const st = S.admin.comb; const n = Number(el.dataset.m); const i = st.a8.indexOf(n); if (i === -1) st.a8.push(n); else st.a8.splice(i, 1); st.a8.sort((a, b) => a - b); combChanged(); },
@@ -1332,6 +1779,7 @@ const ACTIONS = {
       .then(() => { st.dirty = false; }, () => {}).then(() => { st.sending = false; r(); const b = $('#adm-comb-body'); if (b) b.innerHTML = admCombHTML(); });
   },
   parse: () => doParse(),
+  importMD: el => { importarProxima(el); },
   saveJornada: el => {
     const numero = parseInt($('#nNum').value, 10), label = $('#nLabel').value.trim(), fechas = $('#nFechas').value.trim();
     const ph = $('#nPH').value.trim(), pa = $('#nPA').value.trim();
@@ -1378,7 +1826,8 @@ const CHANGES = {
     const id = el.value; const j = J(id);
     adminCall('activate', { jornadaId: id }, 'estado', `${j ? j.label : id} es ahora la jornada activa.`).catch(() => { el.value = S.data.activeId; });
   },
-  resJ: el => { S.admin.res = loadRes(el.value); const b = $('#adm-res-body'); if (b) b.innerHTML = admResHTML(); },
+  resJ: el => { S.admin.res = loadRes(el.value); S.admin.espnInfo = null; const b = $('#adm-res-body'); if (b) b.innerHTML = admResHTML(); },
+  espnAuto: el => { S.admin.espnAuto = el.checked; store.sset('qlt_espn_auto', el.checked ? '1' : null); if (el.checked) espnTraerAdmin(true).then(n => { if (n > 0) guardarResultados(); }); },
   combJ: el => { S.admin.comb = loadComb(el.value); const b = $('#adm-comb-body'); if (b) b.innerHTML = admCombHTML(); },
   combTurno: el => { S.admin.comb.turno = el.value; S.admin.comb.dirty = true; const b = $('#adm-comb-body'); if (b) b.innerHTML = admCombHTML(); },
   editJ: el => loadEdit(el.value),
@@ -1432,12 +1881,21 @@ setInterval(() => {
   const enJuego = j && j.estado.decididos > 0 && j.estado.decididos < j.matches.length;
   const edad = Date.now() - S.dataAt;
   if ((enJuego && edad > 2 * 60 * 1000) || edad > 10 * 60 * 1000) refresh({ quiet: true });
+  if (S.tab === 'jornada') { const jv = J(S.jview); if (jv && liveAplica(jv)) loadLive(jv); }
 }, 30 * 1000);
+let ultimoAutoEspn = 0;
+setInterval(() => {   // modo automático: solo con Admin abierto y la casilla marcada
+  if (!S.admin.espnAuto || !S.admin.pw || S.tab !== 'admin' || document.visibilityState !== 'visible' || !S.admin.res || S.admin.res.sending) return;
+  if (Date.now() - ultimoAutoEspn < 3 * 60 * 1000) return;
+  ultimoAutoEspn = Date.now();
+  espnTraerAdmin(true).then(n => { if (n > 0) guardarResultados(); });
+}, 20 * 1000);
 
 /* ---------------- Arranque ---------------- */
 (function boot() {
   S.me = store.get(LS_NAME) || '';
   S.admin.pw = store.sget(SS_PW);
+  S.admin.espnAuto = store.sget('qlt_espn_auto') === '1';
   if (!IS_GAS) {   // solo en GitHub Pages: icono y "añadir a pantalla de inicio" como app
     [['manifest', 'manifest.webmanifest'], ['icon', 'icon-192.png'], ['apple-touch-icon', 'apple-touch-icon.png']].forEach(([rel, href]) => {
       const l = document.createElement('link'); l.rel = rel; l.href = href; document.head.appendChild(l);
