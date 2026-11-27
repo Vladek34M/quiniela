@@ -215,6 +215,9 @@
   .cons-row .tm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .cons-row .sig{display:block;font-size:13px;letter-spacing:0;color:var(--ink);text-transform:none;margin-top:1px;}
   .cons-row .who{font-size:11px;color:var(--ink-soft);line-height:1.35;}
+  .cons-row .var{display:block;font-size:12px;line-height:1.45;margin-top:2px;}
+  .cons-row .var b{display:inline-block;min-width:24px;}
+  .cons-row .var .who{display:inline;}
   .votes{white-space:nowrap;font-weight:700;font-size:14px;}
   .dots{color:var(--maroon);margin-right:5px;font-size:10px;letter-spacing:1px;}
   .sug{margin:10px 0 0;padding:10px 12px;border:1.5px dashed var(--ink);border-radius:2px;font-family:var(--font-mono);font-size:13px;line-height:1.55;background:rgba(255,255,255,.3);}
@@ -403,7 +406,7 @@
    Funciona igual servida por Apps Script (google.script.run)
    o como página estática en GitHub Pages (fetch a la API).
    ============================================================ */
-const APP_VERSION = '2.4.2';
+const APP_VERSION = '2.5.0';
 const EXEC_URL = 'https://script.google.com/macros/s/AKfycbxYRU7y1AxDqaEtZnqftuI1UK1YpJxCYb1A1tAMP6ylO7aOQmtWmYjQQ7tdoiA9X5z1/exec';
 const API_URL = window.QLT_API_URL || EXEC_URL;
 const IS_GAS = !!(window.google && google.script && google.script.run);
@@ -1005,7 +1008,9 @@ function masVotadoTexto(j) {
   const sug = opinionSugerencia(opinionAgg(j));
   if (sug.dobles.length || sug.triple) {
     L.push('');
-    L.push(`Lo más propuesto: ${sug.dobles.map(d => `doble ${d.num} (${d.top.join('/')}) ×${d.names.length}`).concat(sug.triple ? [`triple ${sug.triple.num} ×${sug.triple.names.length}`] : []).join(' · ')}`);
+    L.push('*Lo más propuesto:*');
+    sug.dobles.forEach(d => L.push(`• Doble ${d.num}. ${matchShort(j, d.num)} (${d.names.length} lo quieren): ${d.variantes.map(v => `${v.signos} ×${v.names.length}`).join(', ')}`));
+    if (sug.triple) L.push(`• Triple ${sug.triple.num}. ${matchShort(j, sug.triple.num)}: ×${sug.triple.names.length}`);
   }
   const faltan = S.data.participantes.filter(p => !entryOf(j, p));
   if (faltan.length) L.push(`_Faltan por votar: ${faltan.join(', ')}_`);
@@ -1095,7 +1100,8 @@ function penaGrid(j, withResults) {
 function opinionState(j) {
   if (S.op.jid !== j.id || (!S.op.dirty && !S.op.sending)) {
     const mine = j.opiniones.find(o => o.name === S.me);
-    S.op = { jid: j.id, d: [0, 1].map(i => mine && mine.dobles[i] ? { num: String(mine.dobles[i].num), signos: mine.dobles[i].signos } : { num: '', signos: '' }),
+    const md = mine ? mine.dobles.slice().sort((a, b) => Number(a.num) - Number(b.num)) : [];
+    S.op = { jid: j.id, d: [0, 1].map(i => md[i] ? { num: String(md[i].num), signos: md[i].signos } : { num: '', signos: '' }),
       t: mine && mine.triple ? String(mine.triple) : '', dirty: false, sending: false };
   }
   return S.op;
@@ -1137,9 +1143,12 @@ function opinionAgg(j) {
   });
   const orden = (a, b) => b.names.length - a.names.length || a.num - b.num;
   const dobles = Object.values(dob).sort(orden);
-  dobles.forEach(d => {   // los signos más elegidos para ese doble (empates juntos, "1X/X2")
-    const max = Math.max(...Object.values(d.signos).map(x => x.length));
-    d.top = ['1X', 'X2', '12'].filter(x => d.signos[x] && d.signos[x].length === max);
+  dobles.forEach(d => {
+    // Cada combinación de signos cuenta aparte: X2 y 1X en el mismo partido NO son el mismo voto.
+    d.variantes = ['1X', 'X2', '12'].filter(x => d.signos[x]).map(x => ({ signos: x, names: d.signos[x] }))
+      .sort((a, b) => b.names.length - a.names.length || ['1X', 'X2', '12'].indexOf(a.signos) - ['1X', 'X2', '12'].indexOf(b.signos));
+    const max = d.variantes[0].names.length;
+    d.top = d.variantes.filter(v => v.names.length === max).map(v => v.signos);   // los más elegidos (empates juntos)
   });
   return { dobles, triples: Object.values(tri).sort(orden) };
 }
@@ -1161,25 +1170,32 @@ function opinionSummary(j) {
   if (!n) h += `<p class="hint">Nadie ha propuesto nada todavía.</p>`;
   else if (!hotD.length && !hotT.length) h += `<p class="hint">Todavía no coincide nadie: ninguna propuesta tiene 2 votos.</p>`;
   else {
-    const fila = (kind, num, sig, names, t3) => `<div class="cons-row ${t3 ? 't3' : ''}"><span class="kind">${kind}${sig ? `<b class="sig">${esc(sig)}</b>` : ''}</span><span class="mnum ${t3 ? 'gold' : ''}">${num}</span>
-      <span class="ct"><span class="tm">${esc(matchShort(j, num))}</span><span class="who">${esc(names.join(', '))}</span></span>
-      <span class="votes"><span class="dots" aria-hidden="true">${'●'.repeat(Math.min(names.length, 9))}</span>${names.length}</span></div>`;
-    h += `<div class="cons">${hotD.map(d => fila('Doble', d.num, d.top.join('/'), d.names, false)).join('')}${hotT.map(t => fila('Triple', t.num, '', t.names, true)).join('')}</div>`;
-    const ds = sug.dobles.map(d => `${d.num} (${d.top.join('/')})`);
+    const filaDoble = d => `<div class="cons-row"><span class="kind">Doble</span><span class="mnum">${d.num}</span>
+      <span class="ct"><span class="tm">${esc(matchShort(j, d.num))}</span>
+        ${d.variantes.map(v => `<span class="var"><b>${esc(v.signos)}</b> ×${v.names.length} <span class="who">${esc(v.names.join(', '))}</span></span>`).join('')}</span>
+      <span class="votes" title="${d.names.length} lo quieren doble"><span class="dots" aria-hidden="true">${'●'.repeat(Math.min(d.names.length, 9))}</span>${d.names.length}</span></div>`;
+    const filaTriple = t => `<div class="cons-row t3"><span class="kind">Triple</span><span class="mnum gold">${t.num}</span>
+      <span class="ct"><span class="tm">${esc(matchShort(j, t.num))}</span><span class="who">${esc(t.names.join(', '))}</span></span>
+      <span class="votes"><span class="dots" aria-hidden="true">${'●'.repeat(Math.min(t.names.length, 9))}</span>${t.names.length}</span></div>`;
+    h += `<p class="hint" style="margin:0 0 6px">En cada doble, el número grande es cuántos lo quieren doble; debajo, qué signos ha puesto cada uno.</p>`;
+    h += `<div class="cons">${hotD.map(filaDoble).join('')}${hotT.map(filaTriple).join('')}</div>`;
+    const ds = sug.dobles.map(d => d.top.length > 1 ? `${d.num} (${d.top.join(' o ')}, empatados)` : `${d.num} (${d.top[0]})`);
     h += `<p class="sug">👉 <b>Boleto sugerido:</b> ${ds.length ? `doble${ds.length > 1 ? 's' : ''} ${ds.join(' y ')}` : 'sin dobles con 2 votos'} · ${sug.triple ? `triple ${sug.triple.num}` : 'sin triple con 2 votos'}`
       + (sug.empateD.length ? `<br><span class="muted">Empatado para el 2.º doble: ${sug.empateD.map(d => d.num).join(', ')}.</span>` : '')
       + (sug.empateT.length ? `<br><span class="muted">Empatado para el triple: ${sug.empateT.map(t => t.num).join(', ')}.</span>` : '') + `</p>`;
   }
   if (n) {
-    const hd = new Set(hotD.map(d => d.num)), ht = new Set(hotT.map(t => t.num));
+    const igual = new Set();   // "partido|signos" que ha elegido más de una persona
+    agg.dobles.forEach(d => d.variantes.forEach(v => { if (v.names.length >= 2) igual.add(d.num + '|' + v.signos); }));
+    const ht = new Set(hotT.map(t => t.num));
     const orden = S.data.participantes;
     const ops = j.opiniones.slice().sort((a, b) => orden.indexOf(a.name) - orden.indexOf(b.name));
     const sinProp = orden.filter(p => !j.opiniones.some(o => o.name === p));
     h += `<h3>Propuestas de cada uno ${sub(`${n} de ${orden.length}`)}</h3><div class="per-list">` + ops.map(o => `<div class="per ${o.name === S.me ? 'me' : ''}"><b class="pname">${esc(o.name)}</b><span>`
-      + o.dobles.map(d => `<span class="chip ${hd.has(Number(d.num)) ? 'hot' : ''}" title="${esc(matchShort(j, d.num))}">D${d.num} · ${esc(d.signos)}</span>`).join('')
+      + o.dobles.slice().sort((a, b) => Number(a.num) - Number(b.num)).map(d => `<span class="chip ${igual.has(Number(d.num) + '|' + d.signos) ? 'hot' : ''}" title="${esc(matchShort(j, d.num))}">D${d.num} · ${esc(d.signos)}</span>`).join('')
       + (o.triple ? `<span class="chip t ${ht.has(Number(o.triple)) ? 'hot' : ''}" title="${esc(matchShort(j, o.triple))}">T${o.triple}</span>` : '')
       + `</span></div>`).join('') + `</div>`
-      + `<p class="hint" style="margin:8px 0 0">D = doble · T = triple · en oscuro, lo que coincide con alguien más.${sinProp.length ? `<br>Sin propuesta: ${esc(sinProp.join(', '))}.` : ''}</p>`;
+      + `<p class="hint" style="margin:8px 0 0">D = doble · T = triple · en oscuro, lo que coincide exactamente con alguien más (mismo partido y mismos signos).${sinProp.length ? `<br>Sin propuesta: ${esc(sinProp.join(', '))}.` : ''}</p>`;
   }
   if (j.entries.length >= 2) {
     const div = j.matches.map(m => {
@@ -1194,7 +1210,7 @@ function opinionSummary(j) {
 function saveOpinion() {
   const j = activeJ(); if (!j || !S.me) return;
   const o = opinionState(j);
-  const dobles = o.d.filter(d => d.num).map(d => ({ num: Number(d.num), signos: d.signos }));
+  const dobles = o.d.filter(d => d.num).map(d => ({ num: Number(d.num), signos: d.signos })).sort((a, b) => a.num - b.num);
   const falta = dobles.find(d => (d.signos || '').length !== 2);
   if (falta) { toast(`Elige los dos signos del doble del partido ${falta.num}.`, 'error'); return; }
   o.sending = true; rerenderOpinion();
@@ -1622,7 +1638,7 @@ function combFill() {
   const h = mostVoted(j.entries.map(e => e.plenoHome).filter(Boolean), GOALS).winner, a = mostVoted(j.entries.map(e => e.plenoAway).filter(Boolean), GOALS).winner;
   if (h.length === 1) st.ph = h; if (a.length === 1) st.pa = a;
   const sug = opinionSugerencia(opinionAgg(j)), extra = [];
-  sug.dobles.forEach(d => { st.marcados[d.num] = d.top[0].split(''); extra.push(`doble ${d.num} (${d.top[0]})`); });
+  sug.dobles.forEach(d => { st.marcados[d.num] = d.top[0].split(''); extra.push(`doble ${d.num} (${d.top[0]}${d.top.length > 1 ? `; empatado con ${d.top.slice(1).join(', ')}` : ''})`); });
   if (sug.triple) { st.marcados[sug.triple.num] = SIGNOS.slice(); extra.push(`triple ${sug.triple.num}`); }
   combChanged();
   setMsg('comb', 'Rellenado con lo más votado (los empates salen como dobles)' + (extra.length ? ` y con lo más propuesto: ${extra.join(', ')}` : '. Nadie ha coincidido aún en dobles/triple: márcalos tú') + '. Revísalo antes de guardar.', 'success');
